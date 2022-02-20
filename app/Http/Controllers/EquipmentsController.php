@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 class EquipmentsController extends Controller
 {
     public function getEquipments($id = null){
-        echo 'get eq ' . $id;
+        echo 'get eq  ' . $id;
     }
 
     public function createEquipment(){
