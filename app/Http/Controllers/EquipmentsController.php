@@ -21,35 +21,47 @@ class EquipmentsController extends Controller
                 $status = 404;
             }
         } else {
-            $data = DB::table('equipments')->get();
+            $data = DB::table('equipments')
+                        ->join('equipment_types', 'equipments.equipment_type_id', '=', 'equipment_types.id')
+                        ->get();
         }
 
         return response()->json($data, $status);
     }
 
-
-
-
     public function createEquipment(Request $request){
+        /*
+         * input data format:
+         * {
+         *      'equipment_type_id' : 1,
+         *      'comment': "some comment",
+         *      'serial_number: ["asldfsus", "SOMESN", "SNDNDNJ99-aa"] || 'serial_number: "HJKT77-ll"
+         * }
+         */
         $rules = [
             'equipment_type_id' => 'required|integer|exists:equipment_types,id',
-            'serial_number'     => ['required', 'string', 'unique:equipments,serial_number', new valid_sn($request->all())],
-            'comment'           => 'nullable'
+            'comment'           => 'nullable',
+            'serial_number'     => ['required', 'string', 'unique:equipments,serial_number', new valid_sn($request->all())]
         ];
         $response = [];
         $raw_data = $request->all();
-        if(!isset($raw_data['items'])){ // received one record - add it to array
-            $raw_data = ['items' => ['0' => $raw_data]];
-        }
 
+        if(!is_array($raw_data['serial_number'])){ // received one record - add it to array
+
+            $raw_data['serial_number'] = [$raw_data['serial_number']];
+        }
+        $eq = [
+            'equipment_type_id' => $raw_data['equipment_type_id'],
+            'comment'           => $raw_data['comment']];
         $success_inserts = 0;
-        foreach ($raw_data['items'] as $eq){
+        foreach ($raw_data['serial_number'] as $sn){
+            $eq['serial_number'] = $sn;
             $validator = Validator::make($eq, $rules);
             if($validator->fails()){
-                $response['response']['errors'][] = ['messages' => $validator->messages(), 'data' => $eq];
+                $response['response']['errors'][] = ['messages' => $validator->messages(), 'sn' => $sn];
+
             } else {
                 $validated = $validator->validated();
-                // $response['response']['validated'][] = $validated;
                 if($result = DB::table('equipments')->insert($validated))
                     $success_inserts++;
             }
