@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Database\Seeders\equipment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Rules\valid_sn;
-use App\Models\equipments;
+
 
 class EquipmentsController extends Controller
 {
@@ -22,7 +21,6 @@ class EquipmentsController extends Controller
         if($id) $data = $data->where('equipments.id', $id);
 
         $data = $data->get();
-        //var_dump($data->count());
         if($data->count() == 0){
             $data = ['error' => 'Not found'];
             $status = 404;
@@ -75,7 +73,7 @@ class EquipmentsController extends Controller
         } else {
             $response['success'] = 0;
         }
-        $code = 200; // не уверен какой код правильно возвращать при создании или не создании записей
+        $code = 200; // не уверен какой код правильно возвращать при создании записей
 
         return response()->json($response, $code);
     }
