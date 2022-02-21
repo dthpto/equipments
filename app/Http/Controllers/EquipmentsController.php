@@ -15,13 +15,18 @@ class EquipmentsController extends Controller
     public function getEquipments($id = null){
         $status = 200;
         if($id){
-            $data = DB::table('equipments')->find($id);
+            $data = DB::table('equipments')
+                ->select('equipments.*', 'equipment_types.type_name', 'equipment_types.sn_mask')
+                ->where('equipments.id', $id)
+                ->join('equipment_types', 'equipments.equipment_type_id', '=', 'equipment_types.id')
+                ->get();
             if(!$data){
                 $data = ['error' => 'Not found'];
                 $status = 404;
             }
         } else {
             $data = DB::table('equipments')
+                        ->select('equipments.*', 'equipment_types.type_name', 'equipment_types.sn_mask')
                         ->join('equipment_types', 'equipments.equipment_type_id', '=', 'equipment_types.id')
                         ->get();
         }
