@@ -29,6 +29,14 @@ class EquipmentsController extends Controller
         return response()->json($data, $status);
     }
 
+    private function rules($r){
+        return [
+            'equipment_type_id' => 'required|integer|exists:equipment_types,id',
+            'comment'           => 'nullable',
+            'serial_number'     => ['required', 'string', 'unique:equipments,serial_number', new valid_sn($r->all())]
+        ];
+    }
+
     public function createEquipment(Request $request){
         /*
          * input data format:
@@ -38,11 +46,7 @@ class EquipmentsController extends Controller
          *      'serial_number: ["asldfsus", "SOMESN", "SNDNDNJ99-aa"] || 'serial_number: "HJKT77-ll"
          * }
          */
-        $rules = [
-            'equipment_type_id' => 'required|integer|exists:equipment_types,id',
-            'comment'           => 'nullable',
-            'serial_number'     => ['required', 'string', 'unique:equipments,serial_number', new valid_sn($request->all())]
-        ];
+        $rules = $this->rules($request);
         $response = [];
         $raw_data = $request->all();
 
@@ -82,11 +86,7 @@ class EquipmentsController extends Controller
         $response = [];
         $response['success'] = 0;
         $code = 200;
-        $rules = [
-            'equipment_type_id' => 'required|integer|exists:equipment_types,id',
-            'serial_number'     => ['required', 'string', 'unique:equipments,serial_number', new valid_sn($request->all())],
-            'comment'           => 'nullable'
-        ];
+        $rules = $this->rules($request);
         $raw_data = $request->all();
 
         $validator = Validator::make($raw_data, $rules);
