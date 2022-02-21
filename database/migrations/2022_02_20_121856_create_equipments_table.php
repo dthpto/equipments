@@ -18,7 +18,7 @@ class CreateEquipmentsTable extends Migration
             $table->bigInteger('equipment_type_id')->unsigned()->default(0);
             $table->foreign('equipment_type_id')->references('id')->on('equipment_types');
             $table->string('serial_number')->default('');
-            $table->text('comment');
+            $table->text('comment')->nullable();
         });
     }
 

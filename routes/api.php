@@ -23,7 +23,7 @@ Route::prefix('/equipment')->group(function () {
     Route::get('/', [EquipmentsController::class, 'getEquipments']);
     Route::get('/{id}', [EquipmentsController::class, 'getEquipments']);
     Route::post('/', [EquipmentsController::class, 'createEquipment']);
-    Route::put('/{id}', [EquipmentsController::class, 'updateEquipment'])->where(['id' => '0-9+']);
-    Route::delete('/{id}', [EquipmentsController::class, 'deleteEquipment'])->where(['id' => '0-9+']);
+    Route::put('/{id}', [EquipmentsController::class, 'updateEquipment']);
+    Route::delete('/{id}', [EquipmentsController::class, 'deleteEquipment']);
 });
 
