@@ -33,7 +33,7 @@ class EquipmentsController extends Controller
     public function createEquipment(Request $request){
         $rules = [
             'equipment_type_id' => 'required|integer|exists:equipment_types,id',
-            'serial_number'     => ['required', 'string', 'unique:equipments,serial_number', new valid_sn],
+            'serial_number'     => ['required', 'string', 'unique:equipments,serial_number', new valid_sn($request->all())],
             'comment'           => 'nullable'
         ];
         $response = [];
@@ -72,7 +72,7 @@ class EquipmentsController extends Controller
         $code = 200;
         $rules = [
             'equipment_type_id' => 'required|integer|exists:equipment_types,id',
-            'serial_number'     => ['required', 'string', 'unique:equipments,serial_number', new valid_sn],
+            'serial_number'     => ['required', 'string', 'unique:equipments,serial_number', new valid_sn($request->all())],
             'comment'           => 'nullable'
         ];
         $raw_data = $request->all();
