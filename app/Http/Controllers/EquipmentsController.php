@@ -11,6 +11,7 @@ use App\Models\equipments;
 
 class EquipmentsController extends Controller
 {
+
     public function getEquipments($id = null){
         $status = 200;
         if($id){
@@ -26,6 +27,9 @@ class EquipmentsController extends Controller
         return response()->json($data, $status);
     }
 
+
+
+
     public function createEquipment(Request $request){
         $rules = [
             'equipment_type_id' => 'required|integer|exists:equipment_types,id',
@@ -39,7 +43,7 @@ class EquipmentsController extends Controller
         }
 
         $success_inserts = 0;
-        foreach ($raw_data['items'] as $key => $eq){
+        foreach ($raw_data['items'] as $eq){
             $validator = Validator::make($eq, $rules);
             if($validator->fails()){
                 $response['response']['errors'][] = ['messages' => $validator->messages(), 'data' => $eq];
@@ -62,8 +66,30 @@ class EquipmentsController extends Controller
         return response()->json($response, $code);
     }
 
-    public function updateEquipment($id = null){
-        echo 'update eq ' . $id;
+    public function updateEquipment(Request $request, $id){
+        $response = [];
+        $response['success'] = 0;
+        $code = 200;
+        $rules = [
+            'equipment_type_id' => 'required|integer|exists:equipment_types,id',
+            'serial_number'     => ['required', 'string', 'unique:equipments,serial_number', new valid_sn],
+            'comment'           => 'nullable'
+        ];
+        $raw_data = $request->all();
+
+        $validator = Validator::make($raw_data, $rules);
+        if($validator->fails()){
+            $response['response']['errors'][] = ['messages' => $validator->messages(), 'data' => $raw_data];
+        } else {
+            $validated = $validator->validated();
+            // $response['response']['validated'][] = $validated;
+            if(DB::table('equipments')->where('id', $id)->update($validated)){
+                $response['response']['data'] = $validated;
+                $response['success'] = 1;
+                $code = 201;
+            }
+        }
+        return response()->json($response, $code);
     }
 
     public function deleteEquipment($id){
